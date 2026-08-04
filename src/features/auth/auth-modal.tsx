@@ -6,8 +6,22 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { LoginForm } from "./login-form";
 import { RegisterForm } from "./register-form";
 
+/**
+ * AuthModal Component
+ * 
+ * A client-side-only dialog component that manages authentication states (login/register)
+ * using URL query parameters (e.g., `?auth=login` or `?auth=register`).
+ * 
+ * Features:
+ * - Syncs dialog visibility and mode directly with the router's active query parameters.
+ * - Prevents hydration mismatch by deferring rendering until client-side mount is complete.
+ * - Intercepts local router navigation via event delegation for register/login links.
+ */
 export function AuthModal() {
+  // Flag to check if component is hydrated/mounted on the client to avoid SSR mismatches
   const [mounted, setMounted] = useState(false);
+  
+  // Hook interfaces for routing and URL state query manipulation
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
