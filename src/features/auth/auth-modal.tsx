@@ -17,6 +17,10 @@ import { RegisterForm } from "./register-form";
  * - Prevents hydration mismatch by deferring rendering until client-side mount is complete.
  * - Intercepts local router navigation via event delegation for register/login links.
  */
+const AUTH_QUERY_KEY = "auth";
+const AUTH_MODE_LOGIN = "login";
+const AUTH_MODE_REGISTER = "register";
+
 export function AuthModal() {
   // Flag to check if component is hydrated/mounted on the client to avoid SSR mismatches
   const [mounted, setMounted] = useState(false);
@@ -30,13 +34,13 @@ export function AuthModal() {
     setMounted(true);
   }, []);
 
-  const authParam = searchParams.get("auth");
-  const isOpen = authParam === "login" || authParam === "register";
+  const authParam = searchParams.get(AUTH_QUERY_KEY);
+  const isOpen = authParam === AUTH_MODE_LOGIN || authParam === AUTH_MODE_REGISTER;
 
   const handleOpenChange = (open: boolean) => {
     if (!open) {
       const params = new URLSearchParams(searchParams.toString());
-      params.delete("auth");
+      params.delete(AUTH_QUERY_KEY);
       const queryStr = params.toString();
       router.replace(`${pathname}${queryStr ? `?${queryStr}` : ""}`, { scroll: false });
     }
@@ -44,13 +48,13 @@ export function AuthModal() {
 
   const handleSwitchToRegister = () => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set("auth", "register");
+    params.set(AUTH_QUERY_KEY, AUTH_MODE_REGISTER);
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
   const handleSwitchToLogin = () => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set("auth", "login");
+    params.set(AUTH_QUERY_KEY, AUTH_MODE_LOGIN);
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
@@ -88,7 +92,7 @@ export function AuthModal() {
         showCloseButton={true}
       >
         <div onClick={handleContainerClick} className="space-y-4 pt-4">
-          {authParam === "login" ? (
+          {authParam === AUTH_MODE_LOGIN ? (
             <div className="space-y-6">
               <div className="flex flex-col items-center text-center space-y-3">
                 <span className="inline-flex items-center rounded-lg border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-color-mist border-color-fog text-color-iris font-mono uppercase tracking-wider text-[11px]">
