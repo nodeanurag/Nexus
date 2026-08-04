@@ -22,6 +22,17 @@ const AUTH_QUERY_KEY = "auth";
 const AUTH_MODE_LOGIN = "login";
 const AUTH_MODE_REGISTER = "register";
 
+// Tailwind CSS layout & design system token constants
+const STYLES = {
+  overlay: "fixed inset-0 z-50 bg-black/10 backdrop-blur-xs flex items-center justify-center animate-fade-in",
+  content: "max-w-[440px] p-8 rounded-2xl bg-card border border-border/80 shadow-2xl backdrop-blur-md",
+  header: {
+    badge: "inline-flex items-center rounded-lg border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-color-mist border-color-fog text-color-iris font-mono uppercase tracking-wider text-[11px]",
+    title: "font-heading text-3xl font-bold tracking-tight text-color-ink",
+    subtitle: "text-color-slate text-sm max-w-xs text-center",
+  }
+};
+
 export interface AuthModalProps {
   /** Optional callback triggered when the modal is closed */
   onClose?: () => void;
@@ -116,8 +127,8 @@ export function AuthModal({ onClose, defaultView }: AuthModalProps = {}) {
 
     if (hasAuthQuery) {
       return (
-        <div className="fixed inset-0 z-50 bg-black/10 backdrop-blur-xs flex items-center justify-center animate-fade-in">
-          <div className="w-full max-w-[440px] p-8 rounded-2xl bg-card border border-border/80 shadow-2xl space-y-6 pt-12">
+        <div className={STYLES.overlay}>
+          <div className={`w-full ${STYLES.content} space-y-6 pt-12`}>
             <div className="flex flex-col items-center space-y-3">
               <Skeleton className="h-5 w-24 rounded-lg" />
               <Skeleton className="h-8 w-48 rounded-lg" />
@@ -141,7 +152,7 @@ export function AuthModal({ onClose, defaultView }: AuthModalProps = {}) {
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent 
-        className="max-w-[440px] p-8 rounded-2xl bg-card border border-border/80 shadow-2xl backdrop-blur-md"
+        className={STYLES.content}
         showCloseButton={true}
       >
         <div onClick={handleContainerClick} className="space-y-4 pt-4">
@@ -179,13 +190,13 @@ interface AuthModalHeaderProps {
 function AuthModalHeader({ badge, title, subtitle }: AuthModalHeaderProps) {
   return (
     <div className="flex flex-col items-center text-center space-y-3">
-      <span className="inline-flex items-center rounded-lg border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-color-mist border-color-fog text-color-iris font-mono uppercase tracking-wider text-[11px]">
+      <span className={STYLES.header.badge}>
         {badge}
       </span>
-      <DialogTitle className="font-heading text-3xl font-bold tracking-tight text-color-ink">
+      <DialogTitle className={STYLES.header.title}>
         {title}
       </DialogTitle>
-      <DialogDescription className="text-color-slate text-sm max-w-xs text-center">
+      <DialogDescription className={STYLES.header.subtitle}>
         {subtitle}
       </DialogDescription>
     </div>
