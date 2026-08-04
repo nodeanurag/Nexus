@@ -22,7 +22,14 @@ const AUTH_QUERY_KEY = "auth";
 const AUTH_MODE_LOGIN = "login";
 const AUTH_MODE_REGISTER = "register";
 
-export function AuthModal() {
+export interface AuthModalProps {
+  /** Optional callback triggered when the modal is closed */
+  onClose?: () => void;
+  /** Optional override for default view mode */
+  defaultView?: "login" | "register";
+}
+
+export function AuthModal({ onClose, defaultView }: AuthModalProps = {}) {
   // Flag to check if component is hydrated/mounted on the client to avoid SSR mismatches
   const [mounted, setMounted] = useState(false);
   
@@ -53,8 +60,9 @@ export function AuthModal() {
   const handleOpenChange = useCallback((open: boolean) => {
     if (!open) {
       updateAuthParam(null);
+      onClose?.();
     }
-  }, [updateAuthParam]);
+  }, [updateAuthParam, onClose]);
 
   const handleSwitchToRegister = useCallback(() => {
     updateAuthParam(AUTH_MODE_REGISTER);
