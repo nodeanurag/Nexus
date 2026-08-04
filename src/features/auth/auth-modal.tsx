@@ -99,37 +99,47 @@ export function AuthModal() {
         <div onClick={handleContainerClick} className="space-y-4 pt-4">
           {authParam === AUTH_MODE_LOGIN ? (
             <div className="space-y-6">
-              <div className="flex flex-col items-center text-center space-y-3">
-                <span className="inline-flex items-center rounded-lg border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-color-mist border-color-fog text-color-iris font-mono uppercase tracking-wider text-[11px]">
-                  Welcome Back
-                </span>
-                <h2 className="font-heading text-3xl font-bold tracking-tight text-color-ink">
-                  Sign in to Nexus
-                </h2>
-                <p className="text-color-slate text-sm max-w-xs">
-                  Enter your credentials to access your workspace dashboard.
-                </p>
-              </div>
+              <AuthModalHeader
+                badge="Welcome Back"
+                title="Sign in to Nexus"
+                subtitle="Enter your credentials to access your workspace dashboard."
+              />
               <LoginForm />
             </div>
           ) : (
             <div className="space-y-6">
-              <div className="flex flex-col items-center text-center space-y-3">
-                <span className="inline-flex items-center rounded-lg border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-color-mist border-color-fog text-color-iris font-mono uppercase tracking-wider text-[11px]">
-                  Get Started
-                </span>
-                <h2 className="font-heading text-3xl font-bold tracking-tight text-color-ink">
-                  Create account
-                </h2>
-                <p className="text-color-slate text-sm max-w-xs">
-                  Sign up to orchestrate high-velocity projects.
-                </p>
-              </div>
+              <AuthModalHeader
+                badge="Get Started"
+                title="Create account"
+                subtitle="Sign up to orchestrate high-velocity projects."
+              />
               <RegisterForm />
             </div>
           )}
         </div>
       </DialogContent>
     </Dialog>
+  );
+}
+
+interface AuthModalHeaderProps {
+  badge: string;
+  title: string;
+  subtitle: string;
+}
+
+function AuthModalHeader({ badge, title, subtitle }: AuthModalHeaderProps) {
+  return (
+    <div className="flex flex-col items-center text-center space-y-3">
+      <span className="inline-flex items-center rounded-lg border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-color-mist border-color-fog text-color-iris font-mono uppercase tracking-wider text-[11px]">
+        {badge}
+      </span>
+      <h2 className="font-heading text-3xl font-bold tracking-tight text-color-ink">
+        {title}
+      </h2>
+      <p className="text-color-slate text-sm max-w-xs">
+        {subtitle}
+      </p>
+    </div>
   );
 }
