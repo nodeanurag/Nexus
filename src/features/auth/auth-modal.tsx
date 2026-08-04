@@ -83,24 +83,27 @@ export function AuthModal({ onClose, defaultView }: AuthModalProps = {}) {
   }, [updateAuthParam]);
 
   const handleContainerClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    const target = e.target as HTMLElement;
+    const target = e.target;
+    if (!(target instanceof Element)) return;
     
-    // Check if clicked the "Create one free" link pointing to /register
+    // Intercept clicks on links navigating to registration to avoid full page reload
     const registerLink = target.closest('a[href="/register"]');
-    if (registerLink) {
+    if (registerLink instanceof HTMLAnchorElement) {
+      logModalEvent("Intercepted click navigating to register view");
       e.preventDefault();
       handleSwitchToRegister();
       return;
     }
 
-    // Check if clicked the "Sign in" link pointing to /login
+    // Intercept clicks on links navigating to login to avoid full page reload
     const loginLink = target.closest('a[href="/login"]');
-    if (loginLink) {
+    if (loginLink instanceof HTMLAnchorElement) {
+      logModalEvent("Intercepted click navigating to login view");
       e.preventDefault();
       handleSwitchToLogin();
       return;
     }
-  }, [handleSwitchToRegister, handleSwitchToLogin]);
+  }, [handleSwitchToRegister, handleSwitchToLogin, logModalEvent]);
 
   // Don't render anything until mounted to avoid SSR/client hydration mismatch.
   // If the page loads with the query parameter already set, show a styled skeleton fallback.
