@@ -5,6 +5,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { LoginForm } from "./login-form";
 import { RegisterForm } from "./register-form";
+import { Skeleton } from "@/components/ui/skeleton";
 
 /**
  * AuthModal Component
@@ -84,8 +85,34 @@ export function AuthModal() {
   }, [handleSwitchToRegister, handleSwitchToLogin]);
 
   // Don't render anything until mounted to avoid SSR/client hydration mismatch.
-  // useSearchParams() reads the URL which only exists on the client side.
-  if (!mounted) return null;
+  // If the page loads with the query parameter already set, show a styled skeleton fallback.
+  if (!mounted) {
+    const isServer = typeof window === "undefined";
+    const hasAuthQuery = !isServer && (
+      window.location.search.includes(`${AUTH_QUERY_KEY}=${AUTH_MODE_LOGIN}`) ||
+      window.location.search.includes(`${AUTH_QUERY_KEY}=${AUTH_MODE_REGISTER}`)
+    );
+
+    if (hasAuthQuery) {
+      return (
+        <div className="fixed inset-0 z-50 bg-black/10 backdrop-blur-xs flex items-center justify-center animate-fade-in">
+          <div className="w-full max-w-[440px] p-8 rounded-2xl bg-card border border-border/80 shadow-2xl space-y-6 pt-12">
+            <div className="flex flex-col items-center space-y-3">
+              <Skeleton className="h-5 w-24 rounded-lg" />
+              <Skeleton className="h-8 w-48 rounded-lg" />
+              <Skeleton className="h-4 w-64 rounded-lg" />
+            </div>
+            <div className="space-y-4">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return null;
+  }
 
   if (!isOpen) return null;
 
