@@ -38,15 +38,24 @@ export function AuthModal({ onClose, defaultView }: AuthModalProps = {}) {
   const router = useRouter();
   const pathname = usePathname();
 
+  // Logging helper for modal lifecycle tracing and analytics
+  const logModalEvent = useCallback((event: string, details?: Record<string, any>) => {
+    if (process.env.NODE_ENV === "development") {
+      console.log(`[AuthModal] ${event}`, details || "");
+    }
+  }, []);
+
   useEffect(() => {
     setMounted(true);
-  }, []);
+    logModalEvent("Mounted/Hydrated");
+  }, [logModalEvent]);
 
   const authParam = searchParams.get(AUTH_QUERY_KEY);
   const isOpen = authParam === AUTH_MODE_LOGIN || authParam === AUTH_MODE_REGISTER;
 
   // Helper function to update the URL query parameter and sync modal visibility state
   const updateAuthParam = useCallback((value: string | null) => {
+    logModalEvent("Query update triggered", { targetMode: value || "closed" });
     const params = new URLSearchParams(searchParams.toString());
     if (value === null) {
       params.delete(AUTH_QUERY_KEY);
@@ -55,14 +64,15 @@ export function AuthModal({ onClose, defaultView }: AuthModalProps = {}) {
     }
     const queryStr = params.toString();
     router.replace(`${pathname}${queryStr ? `?${queryStr}` : ""}`, { scroll: false });
-  }, [searchParams, router, pathname]);
+  }, [searchParams, router, pathname, logModalEvent]);
 
   const handleOpenChange = useCallback((open: boolean) => {
+    logModalEvent("Visibility changed", { open });
     if (!open) {
       updateAuthParam(null);
       onClose?.();
     }
-  }, [updateAuthParam, onClose]);
+  }, [updateAuthParam, onClose, logModalEvent]);
 
   const handleSwitchToRegister = useCallback(() => {
     updateAuthParam(AUTH_MODE_REGISTER);
