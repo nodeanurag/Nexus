@@ -149,6 +149,9 @@ export function AuthModal({ onClose, defaultView }: AuthModalProps = {}) {
   if (!isOpen) return null;
 
 
+  // Future Integrations:
+  // - Support OAuth callback and custom redirect parameters (e.g. `?callbackUrl=...`).
+  // - Extend props to support programmatic opening via custom boolean control.
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent 
