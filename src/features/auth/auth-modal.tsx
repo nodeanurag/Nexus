@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { LoginForm } from "./login-form";
 import { RegisterForm } from "./register-form";
 
@@ -134,12 +134,12 @@ function AuthModalHeader({ badge, title, subtitle }: AuthModalHeaderProps) {
       <span className="inline-flex items-center rounded-lg border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-color-mist border-color-fog text-color-iris font-mono uppercase tracking-wider text-[11px]">
         {badge}
       </span>
-      <h2 className="font-heading text-3xl font-bold tracking-tight text-color-ink">
+      <DialogTitle className="font-heading text-3xl font-bold tracking-tight text-color-ink">
         {title}
-      </h2>
-      <p className="text-color-slate text-sm max-w-xs">
+      </DialogTitle>
+      <DialogDescription className="text-color-slate text-sm max-w-xs text-center">
         {subtitle}
-      </p>
+      </DialogDescription>
     </div>
   );
 }
