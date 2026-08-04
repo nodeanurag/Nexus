@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { LoginForm } from "./login-form";
@@ -38,7 +38,7 @@ export function AuthModal() {
   const isOpen = authParam === AUTH_MODE_LOGIN || authParam === AUTH_MODE_REGISTER;
 
   // Helper function to update the URL query parameter and sync modal visibility state
-  const updateAuthParam = (value: string | null) => {
+  const updateAuthParam = useCallback((value: string | null) => {
     const params = new URLSearchParams(searchParams.toString());
     if (value === null) {
       params.delete(AUTH_QUERY_KEY);
@@ -47,23 +47,23 @@ export function AuthModal() {
     }
     const queryStr = params.toString();
     router.replace(`${pathname}${queryStr ? `?${queryStr}` : ""}`, { scroll: false });
-  };
+  }, [searchParams, router, pathname]);
 
-  const handleOpenChange = (open: boolean) => {
+  const handleOpenChange = useCallback((open: boolean) => {
     if (!open) {
       updateAuthParam(null);
     }
-  };
+  }, [updateAuthParam]);
 
-  const handleSwitchToRegister = () => {
+  const handleSwitchToRegister = useCallback(() => {
     updateAuthParam(AUTH_MODE_REGISTER);
-  };
+  }, [updateAuthParam]);
 
-  const handleSwitchToLogin = () => {
+  const handleSwitchToLogin = useCallback(() => {
     updateAuthParam(AUTH_MODE_LOGIN);
-  };
+  }, [updateAuthParam]);
 
-  const handleContainerClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleContainerClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     const target = e.target as HTMLElement;
     
     // Check if clicked the "Create one free" link pointing to /register
@@ -81,7 +81,7 @@ export function AuthModal() {
       handleSwitchToLogin();
       return;
     }
-  };
+  }, [handleSwitchToRegister, handleSwitchToLogin]);
 
   // Don't render anything until mounted to avoid SSR/client hydration mismatch.
   // useSearchParams() reads the URL which only exists on the client side.
