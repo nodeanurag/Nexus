@@ -37,25 +37,30 @@ export function AuthModal() {
   const authParam = searchParams.get(AUTH_QUERY_KEY);
   const isOpen = authParam === AUTH_MODE_LOGIN || authParam === AUTH_MODE_REGISTER;
 
+  // Helper function to update the URL query parameter and sync modal visibility state
+  const updateAuthParam = (value: string | null) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value === null) {
+      params.delete(AUTH_QUERY_KEY);
+    } else {
+      params.set(AUTH_QUERY_KEY, value);
+    }
+    const queryStr = params.toString();
+    router.replace(`${pathname}${queryStr ? `?${queryStr}` : ""}`, { scroll: false });
+  };
+
   const handleOpenChange = (open: boolean) => {
     if (!open) {
-      const params = new URLSearchParams(searchParams.toString());
-      params.delete(AUTH_QUERY_KEY);
-      const queryStr = params.toString();
-      router.replace(`${pathname}${queryStr ? `?${queryStr}` : ""}`, { scroll: false });
+      updateAuthParam(null);
     }
   };
 
   const handleSwitchToRegister = () => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set(AUTH_QUERY_KEY, AUTH_MODE_REGISTER);
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    updateAuthParam(AUTH_MODE_REGISTER);
   };
 
   const handleSwitchToLogin = () => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set(AUTH_QUERY_KEY, AUTH_MODE_LOGIN);
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    updateAuthParam(AUTH_MODE_LOGIN);
   };
 
   const handleContainerClick = (e: React.MouseEvent<HTMLDivElement>) => {
