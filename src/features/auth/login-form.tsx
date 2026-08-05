@@ -10,3 +10,14 @@ import { Label } from "@/components/ui/label";
 import { loginAction, type AuthFormState } from "@/server/actions/auth.actions";
 
 const initialState: AuthFormState = {};
+
+export function LoginForm() {
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+  const [state, formAction, pending] = useActionState(
+    loginAction,
+    initialState,
+  );
+
+  return null;
+}
