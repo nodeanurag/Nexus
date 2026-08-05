@@ -13,3 +13,14 @@ import {
 } from "@/server/actions/auth.actions";
 
 const initialState: AuthFormState = {};
+
+export function RegisterForm() {
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+  const [state, formAction, pending] = useActionState(
+    registerAction,
+    initialState,
+  );
+
+  return null;
+}
