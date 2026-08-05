@@ -34,9 +34,7 @@ const STYLES = {
 };
 
 export interface AuthModalProps {
-  /** Optional callback triggered when the modal is closed */
   onClose?: () => void;
-  /** Optional override for default view mode */
   defaultView?: "login" | "register";
 }
 
