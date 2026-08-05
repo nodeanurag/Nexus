@@ -22,5 +22,9 @@ export function RegisterForm() {
     initialState,
   );
 
-  return null;
+  return (
+    <form action={formAction} className="space-y-4" noValidate>
+      <input type="hidden" name="callbackUrl" value={callbackUrl} />
+    </form>
+  );
 }
