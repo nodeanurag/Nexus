@@ -30,6 +30,21 @@ export function LoginForm() {
           {state.error}
         </p>
       ) : null}
+
+      <div className="grid gap-2">
+        <Label htmlFor="email">Email</Label>
+        <Input
+          id="email"
+          name="email"
+          type="email"
+          autoComplete="email"
+          placeholder="you@example.com"
+          required
+        />
+        {state.fieldErrors?.email ? (
+          <p className="text-destructive text-sm">{state.fieldErrors.email[0]}</p>
+        ) : null}
+      </div>
     </form>
   );
 }
