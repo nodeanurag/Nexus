@@ -15,6 +15,10 @@ export function SignOutButton({
 }) {
   return (
     <form action={logoutAction} className={className}>
+      <Button type="submit" variant="outline" size="sm" className={cn("w-full justify-center gap-1.5", buttonClassName)}>
+        <LogOut className="size-4" />
+        {!iconOnly && <span>Sign out</span>}
+      </Button>
     </form>
   );
 }
