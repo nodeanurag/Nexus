@@ -79,6 +79,21 @@ export function RegisterForm() {
           </p>
         ) : null}
       </div>
+
+      <Button
+        type="submit"
+        className="w-full h-11 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 font-semibold shadow-none transition-colors"
+        disabled={pending}
+      >
+        {pending ? "Creating account…" : "Create account & workspace"}
+      </Button>
+
+      <p className="text-muted-foreground text-center text-sm pt-2">
+        Already have an account?{" "}
+        <Link href="/login" className="text-ring font-semibold hover:underline">
+          Sign in
+        </Link>
+      </p>
     </form>
   );
 }
