@@ -7,17 +7,7 @@ import { LoginForm } from "./login-form";
 import { RegisterForm } from "./register-form";
 import { Skeleton } from "@/components/ui/skeleton";
 
-/**
- * AuthModal Component
- * 
- * A client-side-only dialog component that manages authentication states (login/register)
- * using URL query parameters (e.g., `?auth=login` or `?auth=register`).
- * 
- * Features:
- * - Syncs dialog visibility and mode directly with the router's active query parameters.
- * - Prevents hydration mismatch by deferring rendering until client-side mount is complete.
- * - Intercepts local router navigation via event delegation for register/login links.
- */
+
 const AUTH_QUERY_KEY = "auth";
 const AUTH_MODE_LOGIN = "login";
 const AUTH_MODE_REGISTER = "register";
@@ -109,8 +99,6 @@ export function AuthModal({ onClose, defaultView }: AuthModalProps = {}) {
     }
   }, [handleSwitchToRegister, handleSwitchToLogin, logModalEvent]);
 
-  // Don't render anything until mounted to avoid SSR/client hydration mismatch.
-  // If the page loads with the query parameter already set, show a styled skeleton fallback.
   if (!mounted) {
     const isServer = typeof window === "undefined";
     const hasAuthQuery = !isServer && (
@@ -142,9 +130,7 @@ export function AuthModal({ onClose, defaultView }: AuthModalProps = {}) {
   if (!isOpen) return null;
 
 
-  // Future Integrations:
-  // - Support OAuth callback and custom redirect parameters (e.g. `?callbackUrl=...`).
-  // - Extend props to support programmatic opening via custom boolean control.
+
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent 
