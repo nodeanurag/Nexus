@@ -61,6 +61,21 @@ export function LoginForm() {
           </p>
         ) : null}
       </div>
+
+      <Button
+        type="submit"
+        className="w-full h-11 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 font-semibold shadow-none transition-colors"
+        disabled={pending}
+      >
+        {pending ? "Signing in…" : "Sign in to workspace"}
+      </Button>
+
+      <p className="text-muted-foreground text-center text-sm pt-2">
+        Don&apos;t have an account?{" "}
+        <Link href="/register" className="text-ring font-semibold hover:underline">
+          Create one free
+        </Link>
+      </p>
     </form>
   );
 }
