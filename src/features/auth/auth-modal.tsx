@@ -60,7 +60,6 @@ export function AuthModal({ onClose, defaultView }: AuthModalProps = {}) {
   const authParam = searchParams.get(AUTH_QUERY_KEY);
   const isOpen = authParam === AUTH_MODE_LOGIN || authParam === AUTH_MODE_REGISTER;
 
-  // Helper function to update the URL query parameter and sync modal visibility state
   const updateAuthParam = useCallback((value: string | null) => {
     logModalEvent("Query update triggered", { targetMode: value || "closed" });
     const params = new URLSearchParams(searchParams.toString());
