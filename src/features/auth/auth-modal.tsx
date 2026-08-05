@@ -45,7 +45,7 @@ export function AuthModal({ onClose, defaultView }: AuthModalProps = {}) {
   const router = useRouter();
   const pathname = usePathname();
 
-  // Logging helper for modal lifecycle tracing and analytics
+
   const logModalEvent = useCallback((event: string, details?: Record<string, any>) => {
     if (process.env.NODE_ENV === "development") {
       console.log(`[AuthModal] ${event}`, details || "");
@@ -92,7 +92,6 @@ export function AuthModal({ onClose, defaultView }: AuthModalProps = {}) {
     const target = e.target;
     if (!(target instanceof Element)) return;
     
-    // Intercept clicks on links navigating to registration to avoid full page reload
     const registerLink = target.closest('a[href="/register"]');
     if (registerLink instanceof HTMLAnchorElement) {
       logModalEvent("Intercepted click navigating to register view");
@@ -101,7 +100,6 @@ export function AuthModal({ onClose, defaultView }: AuthModalProps = {}) {
       return;
     }
 
-    // Intercept clicks on links navigating to login to avoid full page reload
     const loginLink = target.closest('a[href="/login"]');
     if (loginLink instanceof HTMLAnchorElement) {
       logModalEvent("Intercepted click navigating to login view");
