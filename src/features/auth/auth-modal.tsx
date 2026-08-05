@@ -39,10 +39,8 @@ export interface AuthModalProps {
 }
 
 export function AuthModal({ onClose, defaultView }: AuthModalProps = {}) {
-  // Flag to check if component is hydrated/mounted on the client to avoid SSR mismatches
   const [mounted, setMounted] = useState(false);
   
-  // Hook interfaces for routing and URL state query manipulation
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
