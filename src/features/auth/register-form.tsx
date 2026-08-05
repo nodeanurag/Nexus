@@ -33,6 +33,21 @@ export function RegisterForm() {
           {state.error}
         </p>
       ) : null}
+
+      <div className="grid gap-2">
+        <Label htmlFor="name">Name</Label>
+        <Input
+          id="name"
+          name="name"
+          type="text"
+          autoComplete="name"
+          placeholder="Ada Lovelace"
+          required
+        />
+        {state.fieldErrors?.name ? (
+          <p className="text-destructive text-sm">{state.fieldErrors.name[0]}</p>
+        ) : null}
+      </div>
     </form>
   );
 }
