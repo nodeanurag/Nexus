@@ -45,6 +45,22 @@ export function LoginForm() {
           <p className="text-destructive text-sm">{state.fieldErrors.email[0]}</p>
         ) : null}
       </div>
+
+      <div className="grid gap-2">
+        <Label htmlFor="password">Password</Label>
+        <Input
+          id="password"
+          name="password"
+          type="password"
+          autoComplete="current-password"
+          required
+        />
+        {state.fieldErrors?.password ? (
+          <p className="text-destructive text-sm">
+            {state.fieldErrors.password[0]}
+          </p>
+        ) : null}
+      </div>
     </form>
   );
 }
