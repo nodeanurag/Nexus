@@ -151,3 +151,135 @@ export function WorkspaceTaskList({
           </select>
         </div>
       </div>
+
+      {/* Tasks Table */}
+      <div className="overflow-hidden rounded-xl border border-border/60 bg-card/65 backdrop-blur-xs">
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse text-left text-sm text-foreground/90">
+            <thead>
+              <tr className="border-b border-border/40 bg-muted/40 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                <th className="p-4 font-semibold">Task</th>
+                <th className="p-4 font-semibold">Project</th>
+                <th className="p-4 font-semibold">Assignee</th>
+                <th className="p-4 font-semibold">Status</th>
+                <th className="p-4 font-semibold">Priority</th>
+                <th className="p-4 font-semibold text-right">Due Date</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border/40 font-sans">
+              {filtered.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="p-12 text-center text-muted-foreground font-semibold">
+                    No tasks found matching your criteria.
+                  </td>
+                </tr>
+              ) : (
+                filtered.map((task) => {
+                  const assigneeName = task.assignee?.name ?? "Unassigned";
+
+                  return (
+                    <tr
+                      key={task.id}
+                      className="hover:bg-muted/30 transition-colors group/row"
+                    >
+                      {/* Title */}
+                      <td className="p-4 font-semibold">
+                        <Link
+                          href={`/workspaces/${workspaceId}/projects/${task.project.id}/tasks/${task.id}`}
+                          className="hover:underline hover:text-primary transition-colors block max-w-sm truncate"
+                        >
+                          {task.title}
+                        </Link>
+                      </td>
+
+                      {/* Project */}
+                      <td className="p-4">
+                        <Link
+                          href={`/workspaces/${workspaceId}/projects/${task.project.id}`}
+                          className="inline-flex items-center gap-1.5 font-medium text-xs text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          <FolderKanban className="size-3.5" />
+                          <span>{task.project.title}</span>
+                        </Link>
+                      </td>
+
+                      {/* Assignee */}
+                      <td className="p-4">
+                        <div className="flex items-center gap-2">
+                          <Avatar className="size-6">
+                            {task.assignee ? (
+                              <AvatarFallback
+                                className={cn(
+                                  "text-[8px] font-bold text-white bg-gradient-to-br flex items-center justify-center",
+                                  getUserGradient(assigneeName)
+                                )}
+                              >
+                                {assigneeName.slice(0, 2).toUpperCase()}
+                              </AvatarFallback>
+                            ) : (
+                              <AvatarFallback className="text-[8px] font-bold text-muted-foreground bg-muted flex items-center justify-center border border-border/40">
+                                U
+                              </AvatarFallback>
+                            )}
+                          </Avatar>
+                          <span className="text-xs font-semibold text-foreground/80">
+                            {assigneeName}
+                          </span>
+                        </div>
+                      </td>
+
+                      {/* Status */}
+                      <td className="p-4">
+                        <Badge
+                          variant="secondary"
+                          className={cn(
+                            "rounded-lg px-2 py-1 text-[10px] font-mono font-semibold uppercase tracking-wider border",
+                            task.status === "DONE"
+                              ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+                              : task.status === "IN_PROGRESS"
+                              ? "bg-color-mist text-color-iris border-color-fog"
+                              : "bg-color-mist text-color-slate border-color-fog"
+                          )}
+                        >
+                          {STATUS_LABELS[task.status]}
+                        </Badge>
+                      </td>
+
+                      {/* Priority */}
+                      <td className="p-4">
+                        <Badge
+                          variant="secondary"
+                          className={cn(
+                            "rounded-lg px-2 py-1 text-[10px] font-mono font-semibold uppercase tracking-wider border",
+                            task.priority === "URGENT"
+                              ? "bg-rose-500/10 text-rose-600 border-rose-500/20"
+                              : task.priority === "HIGH"
+                              ? "bg-[rgba(123,104,238,0.1)] text-color-iris border-[rgba(123,104,238,0.2)]"
+                              : "bg-color-mist text-color-slate border-color-fog"
+                          )}
+                        >
+                          {PRIORITY_LABELS[task.priority]}
+                        </Badge>
+                      </td>
+
+                      {/* Due Date */}
+                      <td className="p-4 text-right font-mono text-xs text-muted-foreground">
+                        {task.dueDate
+                          ? new Date(task.dueDate).toLocaleDateString(undefined, {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            })
+                          : "—"}
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}
