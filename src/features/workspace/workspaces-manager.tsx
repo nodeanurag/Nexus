@@ -225,3 +225,32 @@ export function WorkspacesManager({
       }
     });
   }
+
+  function handleRevoke(invitationId: string, email: string) {
+    if (!activeWorkspace) return;
+    if (!confirm(`Are you sure you want to revoke the invitation for "${email}"?`)) return;
+
+    startTransition(async () => {
+      const res = await revokeInvitationAction(activeWorkspace.id, invitationId);
+      if (res.ok) {
+        toast.success("Invitation revoked successfully.");
+        setInvitations((prev) => prev.filter((i) => i.id !== invitationId));
+      } else {
+        toast.error(res.error || "Failed to revoke invitation.");
+      }
+    });
+  }
+
+  function handleRoleChange(memberId: string, role: string) {
+    if (!activeWorkspace) return;
+
+    startTransition(async () => {
+      const res = await updateMemberRoleAction(activeWorkspace.id, memberId, { role });
+      if (res.ok) {
+        toast.success("Member role updated.");
+        setMembers((prev) => prev.map((m) => (m.id === memberId ? { ...m, role } : m)));
+      } else {
+        toast.error(res.error || "Failed to update role.");
+      }
+    });
+  }
