@@ -114,3 +114,83 @@ export function ProjectFormDialog({
                   <p className="text-destructive text-sm">{errors.title[0]}</p>
                 ) : null}
               </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="project-description">Description</Label>
+                <Textarea
+                  id="project-description"
+                  value={description}
+                  onChange={(event) => setDescription(event.target.value)}
+                  placeholder="What is this project about?"
+                  rows={3}
+                />
+                {errors?.description ? (
+                  <p className="text-destructive text-sm">
+                    {errors.description[0]}
+                  </p>
+                ) : null}
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="project-status">Status</Label>
+                  <Select
+                    value={status}
+                    onValueChange={(value) =>
+                      setStatus(value as ProjectStatus)
+                    }
+                    items={PROJECT_STATUS_LABELS}
+                  >
+                    <SelectTrigger id="project-status" className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PROJECT_STATUSES.map((value) => (
+                        <SelectItem key={value} value={value}>
+                          {PROJECT_STATUS_LABELS[value]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="project-deadline">Deadline</Label>
+                  <Input
+                    id="project-deadline"
+                    type="date"
+                    value={deadline}
+                    onChange={(event) => setDeadline(event.target.value)}
+                  />
+                  {errors?.deadline ? (
+                    <p className="text-destructive text-sm">
+                      {errors.deadline[0]}
+                    </p>
+                  ) : null}
+                </div>
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setOpen(false)}
+                disabled={pending}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={pending}>
+                {pending
+                  ? "Saving…"
+                  : isEdit
+                    ? "Save changes"
+                    : "Create project"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
