@@ -432,3 +432,296 @@ export function WorkspacesManager({
           })}
         </div>
       )}
+
+      {/* Settings / Manage Workspace Dialog */}
+      {activeWorkspace && (
+        <Dialog open={true} onOpenChange={(open) => !open && setActiveWorkspace(null)}>
+          <DialogContent className="max-w-xl max-h-[85vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-bold">Manage Workspace</DialogTitle>
+              <DialogDescription>
+                Configure settings and membership access for &quot;{activeWorkspace.name}&quot;
+              </DialogDescription>
+            </DialogHeader>
+
+            {/* Tab Headers */}
+            <div className="flex border-b border-border/60 mb-4">
+              <button
+                onClick={() => setActiveTab("general")}
+                className={cn(
+                  "px-4 py-2 text-sm font-semibold border-b-2 transition-all cursor-pointer",
+                  activeTab === "general"
+                    ? "border-primary text-primary"
+                    : "border-transparent text-muted-foreground hover:text-foreground"
+                )}
+              >
+                General Settings
+              </button>
+              <button
+                onClick={() => setActiveTab("members")}
+                className={cn(
+                  "px-4 py-2 text-sm font-semibold border-b-2 transition-all cursor-pointer",
+                  activeTab === "members"
+                    ? "border-primary text-primary"
+                    : "border-transparent text-muted-foreground hover:text-foreground"
+                )}
+              >
+                Team Access ({members.length})
+              </button>
+            </div>
+
+            {/* General Tab */}
+            {activeTab === "general" && (
+              <div className="space-y-6">
+                {/* Rename */}
+                <form onSubmit={handleRename} className="space-y-2.5">
+                  <h3 className="text-sm font-bold text-foreground">Rename Workspace</h3>
+                  <div className="flex gap-2">
+                    <Input
+                      value={renameName}
+                      onChange={(e) => setRenameName(e.target.value)}
+                      placeholder="Workspace Name"
+                      className="h-10 bg-card border-border/80 rounded-xl"
+                      disabled={pending}
+                    />
+                    <Button type="submit" disabled={pending || !renameName.trim()} className="h-10 rounded-xl font-semibold">
+                      Save
+                    </Button>
+                  </div>
+                </form>
+
+                <div className="h-px bg-border/60" />
+
+                {/* Danger zone */}
+                <div className="space-y-3">
+                  <h3 className="text-sm font-bold text-destructive">Danger zone</h3>
+                  <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                      <h4 className="text-xs font-bold text-foreground">
+                        {activeWorkspace.role === "OWNER"
+                          ? "Delete this workspace"
+                          : "Leave this workspace"}
+                      </h4>
+                      <p className="text-[11px] text-muted-foreground mt-1 max-w-sm">
+                        {activeWorkspace.role === "OWNER"
+                          ? "Deleting is permanent and deletes all projects, tasks, comments, and activity history."
+                          : "You will lose access to all projects, tasks, and data in this workspace."}
+                      </p>
+                    </div>
+                    {activeWorkspace.role === "OWNER" ? (
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        onClick={handleDelete}
+                        disabled={pending}
+                        className="text-xs h-9 rounded-xl font-semibold shrink-0"
+                      >
+                        <Trash2 className="size-3.5 mr-1" />
+                        Delete Workspace
+                      </Button>
+                    ) : (
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        onClick={handleLeave}
+                        disabled={pending}
+                        className="text-xs h-9 rounded-xl font-semibold shrink-0"
+                      >
+                        <LogOut className="size-3.5 mr-1" />
+                        Leave Workspace
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Members Tab */}
+            {activeTab === "members" && (
+              <div className="space-y-6">
+                {/* Invite */}
+                <form onSubmit={handleInvite} className="space-y-2.5">
+                  <h3 className="text-sm font-bold text-foreground">Invite Member</h3>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <Input
+                      type="email"
+                      placeholder="colleague@domain.com"
+                      value={inviteEmail}
+                      onChange={(e) => setInviteEmail(e.target.value)}
+                      className="h-10 bg-card border-border/80 rounded-xl flex-1"
+                      disabled={pending}
+                    />
+                    <select
+                      value={inviteRole}
+                      onChange={(e) => setInviteRole(e.target.value)}
+                      className="h-10 px-3 text-sm bg-card border border-border/80 rounded-xl outline-hidden focus:ring-1 focus:ring-primary/40 text-foreground/80 font-medium"
+                      disabled={pending}
+                    >
+                      <option value="ADMIN">Admin</option>
+                      <option value="MEMBER">Member</option>
+                      <option value="VIEWER">Viewer</option>
+                    </select>
+                    <Button type="submit" disabled={pending || !inviteEmail.trim()} className="h-10 rounded-xl font-semibold">
+                      <Plus className="size-4 mr-1" />
+                      Add
+                    </Button>
+                  </div>
+                </form>
+
+                <div className="h-px bg-border/60" />
+
+                {/* List */}
+                <div className="space-y-3">
+                  <h3 className="text-sm font-bold text-foreground">Team Directory</h3>
+                  {membersLoading ? (
+                    <div className="text-xs text-muted-foreground py-4 text-center">
+                      Loading team directory...
+                    </div>
+                  ) : members.length === 0 ? (
+                    <div className="text-xs text-muted-foreground py-4 text-center">
+                      No members in this workspace
+                    </div>
+                  ) : (
+                    <div className="space-y-2.5 max-h-56 overflow-y-auto pr-1">
+                      {members.map((m) => {
+                        const isSelf = m.userId === user.id;
+                        const isTargetOwner = m.role === "OWNER";
+                        const isCurrentOwner = activeWorkspace.role === "OWNER";
+
+                        return (
+                          <div
+                            key={m.id}
+                            className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-2 rounded-xl border border-border/30 hover:bg-muted/15 transition-colors"
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <Avatar className="size-8">
+                                <AvatarFallback
+                                  className={cn(
+                                    "text-[9px] font-bold text-white bg-gradient-to-br flex items-center justify-center",
+                                    getUserGradient(m.user.name)
+                                  )}
+                                >
+                                  {m.user.name.slice(0, 2).toUpperCase()}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div className="min-w-0">
+                                <div className="text-xs font-bold truncate flex items-center gap-1.5">
+                                  <span>{m.user.name}</span>
+                                  {isSelf && <span className="text-[10px] text-muted-foreground font-normal">(you)</span>}
+                                  {isTargetOwner && <Crown className="size-3 text-amber-500 fill-amber-500/10 shrink-0" />}
+                                </div>
+                                <div className="text-[10px] text-muted-foreground truncate">
+                                  {m.user.email}
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Member Operations */}
+                            <div className="flex items-center gap-2">
+                              {/* Change Role Selection */}
+                              {isCurrentOwner && !isTargetOwner ? (
+                                <select
+                                  value={m.role}
+                                  onChange={(e) => handleRoleChange(m.id, e.target.value)}
+                                  className="h-8 px-2 text-[11px] bg-card border border-border/80 rounded-lg outline-hidden text-foreground/80 font-medium"
+                                  disabled={pending}
+                                >
+                                  <option value="ADMIN">Admin</option>
+                                  <option value="MEMBER">Member</option>
+                                  <option value="VIEWER">Viewer</option>
+                                </select>
+                              ) : (
+                                <Badge variant="secondary" className="text-[9px] uppercase font-mono font-semibold px-2 py-0.5 rounded-md">
+                                  {ROLE_LABELS[m.role as Role]}
+                                </Badge>
+                              )}
+
+                              {/* Transfer Ownership Button */}
+                              {isCurrentOwner && !isTargetOwner && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-8 text-[11px] font-bold rounded-lg border-amber-500/20 text-amber-600 hover:bg-amber-500/5 cursor-pointer"
+                                  onClick={() => handleTransferOwnership(m.id, m.user.name)}
+                                  disabled={pending}
+                                >
+                                  Make Owner
+                                </Button>
+                              )}
+
+                              {/* Remove Member Button */}
+                              {((isCurrentOwner && !isTargetOwner) ||
+                                (activeWorkspace.role === "ADMIN" &&
+                                  m.role !== "OWNER" &&
+                                  m.role !== "ADMIN")) && (
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive rounded-lg border border-border/20 cursor-pointer"
+                                  onClick={() => handleRemoveMember(m.id, m.user.name)}
+                                  disabled={pending}
+                                  title="Remove Member"
+                                >
+                                  <UserX className="size-3.5" />
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                {/* Pending Invitations */}
+                {invitations.length > 0 && (
+                  <div className="space-y-3 pt-4 border-t border-border/40">
+                    <h3 className="text-sm font-bold text-foreground">Pending Invitations</h3>
+                    <div className="space-y-2.5 max-h-40 overflow-y-auto pr-1">
+                      {invitations.map((inv) => (
+                        <div
+                          key={inv.id}
+                          className="flex items-center justify-between gap-3 p-2 rounded-xl border border-dashed border-border/40 bg-muted/5 hover:bg-muted/10 transition-colors"
+                        >
+                          <div className="min-w-0">
+                            <div className="text-xs font-bold text-foreground truncate">
+                              {inv.email}
+                            </div>
+                            <div className="text-[10px] text-muted-foreground truncate">
+                              Invited by {inv.invitedBy.name}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Badge variant="secondary" className="text-[9px] uppercase font-mono font-semibold px-2 py-0.5 rounded-md">
+                              {ROLE_LABELS[inv.role as Role]}
+                            </Badge>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive rounded-lg border border-border/20 cursor-pointer"
+                              onClick={() => handleRevoke(inv.id, inv.email)}
+                              disabled={pending}
+                              title="Revoke Invitation"
+                            >
+                              <UserX className="size-3.5" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            <DialogFooter className="mt-4 border-t border-border/40 pt-4">
+              <Button onClick={() => setActiveWorkspace(null)} className="h-9 rounded-xl font-semibold">
+                Close
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+    </div>
+  );
+}
