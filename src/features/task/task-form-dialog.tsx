@@ -153,3 +153,108 @@ export function TaskFormDialog({
                   </p>
                 ) : null}
               </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="task-status">Status</Label>
+                  <Select
+                    value={status}
+                    onValueChange={(value) => setStatus(value as TaskStatus)}
+                    items={TASK_STATUS_LABELS}
+                  >
+                    <SelectTrigger id="task-status" className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {TASK_STATUSES.map((value) => (
+                        <SelectItem key={value} value={value}>
+                          {TASK_STATUS_LABELS[value]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="task-priority">Priority</Label>
+                  <Select
+                    value={priority}
+                    onValueChange={(value) =>
+                      setPriority(value as TaskPriority)
+                    }
+                    items={TASK_PRIORITY_LABELS}
+                  >
+                    <SelectTrigger id="task-priority" className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {TASK_PRIORITIES.map((value) => (
+                        <SelectItem key={value} value={value}>
+                          {TASK_PRIORITY_LABELS[value]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="task-assignee">Assignee</Label>
+                  <Select
+                    value={assignee}
+                    onValueChange={(value) => setAssignee(value ?? UNASSIGNED)}
+                    items={assigneeItems}
+                  >
+                    <SelectTrigger id="task-assignee" className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={UNASSIGNED}>Unassigned</SelectItem>
+                      {members.map((member) => (
+                        <SelectItem key={member.id} value={member.id}>
+                          {member.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="task-due">Due date</Label>
+                  <Input
+                    id="task-due"
+                    type="date"
+                    value={dueDate}
+                    onChange={(event) => setDueDate(event.target.value)}
+                  />
+                  {errors?.dueDate ? (
+                    <p className="text-destructive text-sm">
+                      {errors.dueDate[0]}
+                    </p>
+                  ) : null}
+                </div>
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setOpen(false)}
+                disabled={pending}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={pending}>
+                {pending
+                  ? "Saving…"
+                  : isEdit
+                    ? "Save changes"
+                    : "Create task"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
