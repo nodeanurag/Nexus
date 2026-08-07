@@ -48,3 +48,62 @@ type TaskInitial = {
   dueDate: string | null; // yyyy-mm-dd
   assigneeId: string | null;
 };
+
+export function TaskFormDialog({
+  projectId,
+  members,
+  task,
+  trigger,
+}: {
+  projectId: string;
+  members: TaskMember[];
+  task?: TaskInitial;
+  trigger: (props: { onClick: () => void }) => ReactNode;
+}) {
+  const isEdit = Boolean(task);
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [pending, startTransition] = useTransition();
+
+  const [title, setTitle] = useState(task?.title ?? "");
+  const [description, setDescription] = useState(task?.description ?? "");
+  const [status, setStatus] = useState<TaskStatus>(task?.status ?? Status.TODO);
+  const [priority, setPriority] = useState<TaskPriority>(
+    task?.priority ?? Priority.MEDIUM,
+  );
+  const [dueDate, setDueDate] = useState(task?.dueDate ?? "");
+  const [assignee, setAssignee] = useState(task?.assigneeId ?? UNASSIGNED);
+  const [errors, setErrors] = useState<Record<string, string[] | undefined>>();
+
+  const assigneeItems: Record<string, string> = {
+    [UNASSIGNED]: "Unassigned",
+    ...Object.fromEntries(members.map((member) => [member.id, member.name])),
+  };
+
+  function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
+    setErrors(undefined);
+    startTransition(async () => {
+      const input = {
+        title,
+        description,
+        status,
+        priority,
+        dueDate,
+        assigneeId: assignee === UNASSIGNED ? "" : assignee,
+      };
+      const result =
+        isEdit && task
+          ? await updateTaskAction(task.id, input)
+          : await createTaskAction(projectId, input);
+
+      if (result.ok) {
+        toast.success(isEdit ? "Task updated." : "Task created.");
+        setOpen(false);
+        router.refresh();
+      } else {
+        setErrors(result.fieldErrors);
+        toast.error(result.error);
+      }
+    });
+  }
