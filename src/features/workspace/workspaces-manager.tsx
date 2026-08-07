@@ -254,3 +254,46 @@ export function WorkspacesManager({
       }
     });
   }
+
+  function handleTransferOwnership(targetMemberId: string, targetName: string) {
+    if (!activeWorkspace) return;
+    if (
+      !confirm(
+        `Are you sure you want to transfer ownership to ${targetName}? You will be demoted to Admin.`
+      )
+    )
+      return;
+
+    startTransition(async () => {
+      const res = await transferWorkspaceOwnershipAction(activeWorkspace.id, targetMemberId);
+      if (res.ok) {
+        toast.success(`Ownership transferred to ${targetName}.`);
+        setWorkspaces((prev) =>
+          prev.map((ws) =>
+            ws.id === activeWorkspace.id ? { ...ws, role: "ADMIN", ownerId: targetMemberId } : ws
+          )
+        );
+        setActiveWorkspace(null);
+        router.refresh();
+      } else {
+        toast.error(res.error || "Failed to transfer ownership.");
+      }
+    });
+  }
+
+  function handleRemoveMember(memberId: string, memberName: string) {
+    if (!activeWorkspace) return;
+    if (!confirm(`Are you sure you want to remove ${memberName} from this workspace?`)) return;
+
+    startTransition(async () => {
+      const res = await removeMemberAction(activeWorkspace.id, memberId);
+      if (res.ok) {
+        toast.success(`${memberName} removed from workspace.`);
+        setMembers((prev) => prev.filter((m) => m.id !== memberId));
+      } else {
+        toast.error(res.error || "Failed to remove member.");
+      }
+    });
+  }
+
+  return (
