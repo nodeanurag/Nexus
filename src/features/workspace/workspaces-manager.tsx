@@ -93,3 +93,49 @@ function getUserGradient(name: string) {
   const index = Math.abs(hash) % USER_GRADIENTS.length;
   return USER_GRADIENTS[index];
 }
+
+export function WorkspacesManager({
+  initialWorkspaces,
+  user,
+}: {
+  initialWorkspaces: WorkspaceWithRole[];
+  user: { id: string; name?: string | null; email?: string | null };
+}) {
+  const router = useRouter();
+  const [workspaces, setWorkspaces] = useState<WorkspaceWithRole[]>(initialWorkspaces);
+  const [search, setSearch] = useState("");
+  const [activeWorkspace, setActiveWorkspace] = useState<WorkspaceWithRole | null>(null);
+  const [members, setMembers] = useState<any[]>([]);
+  const [invitations, setInvitations] = useState<any[]>([]);
+  const [membersLoading, setMembersLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<"general" | "members">("general");
+
+  // State fields for management actions
+  const [renameName, setRenameName] = useState("");
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteRole, setInviteRole] = useState("MEMBER");
+
+  const [pending, startTransition] = useTransition();
+
+  // Load members and invitations whenever the active workspace changes
+  useEffect(() => {
+    if (activeWorkspace) {
+      setMembersLoading(true);
+      Promise.all([
+        listMembersAction(activeWorkspace.id),
+        listInvitationsAction(activeWorkspace.id),
+      ]).then(([mRes, iRes]) => {
+        if (mRes.ok && mRes.data) {
+          setMembers(mRes.data);
+        } else {
+          toast.error("Failed to load workspace members.");
+        }
+        if (iRes.ok && iRes.data) {
+          setInvitations(iRes.data);
+        } else {
+          toast.error("Failed to load pending invitations.");
+        }
+        setMembersLoading(false);
+      });
+    }
+  }, [activeWorkspace]);
