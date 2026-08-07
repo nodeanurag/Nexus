@@ -35,3 +35,24 @@ export function WorkspaceSettingsForm({
       }
     });
   }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="grid gap-2">
+        <Label htmlFor="workspace-name">Workspace name</Label>
+        <Input
+          id="workspace-name"
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          className="max-w-sm"
+        />
+        {errors?.name ? (
+          <p className="text-destructive text-sm">{errors.name[0]}</p>
+        ) : null}
+      </div>
+      <Button type="submit" disabled={pending || name.trim() === initialName}>
+        {pending ? "Saving…" : "Save changes"}
+      </Button>
+    </form>
+  );
+}
