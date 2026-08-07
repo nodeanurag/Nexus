@@ -179,3 +179,49 @@ export function WorkspacesManager({
       }
     });
   }
+
+  function handleLeave() {
+    if (!activeWorkspace) return;
+    if (!confirm(`Are you sure you want to leave "${activeWorkspace.name}"?`)) return;
+
+    startTransition(async () => {
+      const res = await leaveWorkspaceAction(activeWorkspace.id);
+      if (res.ok) {
+        toast.success("You have left the workspace.");
+        setWorkspaces((prev) => prev.filter((ws) => ws.id !== activeWorkspace.id));
+        setActiveWorkspace(null);
+        router.refresh();
+      } else {
+        toast.error(res.error || "Failed to leave workspace.");
+      }
+    });
+  }
+
+  function handleInvite(e: React.FormEvent) {
+    e.preventDefault();
+    if (!activeWorkspace || !inviteEmail.trim()) return;
+
+    startTransition(async () => {
+      const res = await inviteMemberAction(activeWorkspace.id, {
+        email: inviteEmail,
+        role: inviteRole as Role,
+      });
+      if (res.ok) {
+        toast.success("Invitation sent successfully.");
+        setInviteEmail("");
+        // Reload members & invitations
+        const [freshMembers, freshInvites] = await Promise.all([
+          listMembersAction(activeWorkspace.id),
+          listInvitationsAction(activeWorkspace.id),
+        ]);
+        if (freshMembers.ok && freshMembers.data) {
+          setMembers(freshMembers.data);
+        }
+        if (freshInvites.ok && freshInvites.data) {
+          setInvitations(freshInvites.data);
+        }
+      } else {
+        toast.error(res.error || "Failed to send invitation.");
+      }
+    });
+  }
