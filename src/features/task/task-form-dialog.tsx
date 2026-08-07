@@ -107,3 +107,49 @@ export function TaskFormDialog({
       }
     });
   }
+
+  return (
+    <>
+      {trigger({ onClick: () => setOpen(true) })}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <form onSubmit={handleSubmit}>
+            <DialogHeader>
+              <DialogTitle>{isEdit ? "Edit task" : "New task"}</DialogTitle>
+              <DialogDescription>
+                {isEdit
+                  ? "Update the task details."
+                  : "Add a task to this project."}
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <Label htmlFor="task-title">Title</Label>
+                <Input
+                  id="task-title"
+                  value={title}
+                  onChange={(event) => setTitle(event.target.value)}
+                  placeholder="Implement login form"
+                  autoFocus
+                />
+                {errors?.title ? (
+                  <p className="text-destructive text-sm">{errors.title[0]}</p>
+                ) : null}
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="task-description">Description</Label>
+                <Textarea
+                  id="task-description"
+                  value={description}
+                  onChange={(event) => setDescription(event.target.value)}
+                  placeholder="Add any details…"
+                  rows={3}
+                />
+                {errors?.description ? (
+                  <p className="text-destructive text-sm">
+                    {errors.description[0]}
+                  </p>
+                ) : null}
+              </div>
