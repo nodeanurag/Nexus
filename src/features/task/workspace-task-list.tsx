@@ -84,3 +84,70 @@ export function WorkspaceTaskList({
   });
 
   return (
+    <div className="space-y-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Tasks</h1>
+          <p className="text-muted-foreground text-sm">
+            {filtered.length} of {tasks.length} tasks
+          </p>
+        </div>
+      </div>
+
+      {/* Filters Bar */}
+      <div className="flex flex-col gap-3 md:flex-row md:items-center justify-between">
+        <div className="relative max-w-sm flex-1">
+          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground/70" />
+          <Input
+            type="text"
+            placeholder="Search tasks..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-9 h-10 bg-card border-border/80 rounded-xl focus-visible:ring-primary/45 w-full"
+          />
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2.5">
+          {/* Project Filter */}
+          <select
+            value={projectFilter}
+            onChange={(e) => setProjectFilter(e.target.value)}
+            className="h-10 px-3 text-sm bg-card border border-border/80 rounded-xl outline-hidden focus:ring-1 focus:ring-primary/40 focus:border-primary/50 text-foreground/80 font-medium"
+          >
+            <option value="ALL">All Projects</option>
+            {uniqueProjects.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.title}
+              </option>
+            ))}
+          </select>
+
+          {/* Status Filter */}
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="h-10 px-3 text-sm bg-card border border-border/80 rounded-xl outline-hidden focus:ring-1 focus:ring-primary/40 focus:border-primary/50 text-foreground/80 font-medium"
+          >
+            <option value="ALL">All Statuses</option>
+            {Object.entries(STATUS_LABELS).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+
+          {/* Priority Filter */}
+          <select
+            value={priorityFilter}
+            onChange={(e) => setPriorityFilter(e.target.value)}
+            className="h-10 px-3 text-sm bg-card border border-border/80 rounded-xl outline-hidden focus:ring-1 focus:ring-primary/40 focus:border-primary/50 text-foreground/80 font-medium"
+          >
+            <option value="ALL">All Priorities</option>
+            {Object.entries(PRIORITY_LABELS).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
