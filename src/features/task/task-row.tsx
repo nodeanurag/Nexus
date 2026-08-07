@@ -75,3 +75,97 @@ export function TaskRow({
     : null;
 
   return (
+    <div className={cn(
+      "flex items-center justify-between gap-4 p-4 hover:bg-muted/40 transition-all duration-200",
+      PRIORITY_BORDER[task.priority]
+    )}>
+      <div className="min-w-0 space-y-1.5">
+        <Link href={href} className="block truncate font-bold text-sm text-foreground/95 hover:text-primary transition-colors hover:underline">
+          {task.title}
+        </Link>
+        <div className="text-muted-foreground flex flex-wrap items-center gap-3.5 text-xs font-semibold">
+          <Badge
+            variant="secondary"
+            className={cn("text-[9px] font-bold px-2 py-0.5 shadow-3xs", PRIORITY_BADGE[task.priority])}
+          >
+            {TASK_PRIORITY_LABELS[task.priority]}
+          </Badge>
+          {task.assigneeName ? (
+            <span className="flex items-center gap-1.5 truncate">
+              <span className={cn(
+                "flex size-4.5 shrink-0 items-center justify-center rounded-full bg-gradient-to-br font-bold text-[8px] text-white shadow-3xs",
+                getUserGradient(task.assigneeName)
+              )}>
+                {task.assigneeName.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()}
+              </span>
+              <span className="text-foreground/80">{task.assigneeName}</span>
+            </span>
+          ) : (
+            <span className="italic opacity-60">Unassigned</span>
+          )}
+          {dueDate ? (
+            <span className="flex items-center gap-1 text-foreground/75">
+              <CalendarClock className="size-3.5 text-primary/80" />
+              {dueDate}
+            </span>
+          ) : null}
+          {task.commentCount > 0 ? (
+            <span className="flex items-center gap-1 text-foreground/75">
+              <MessageSquare className="size-3.5 text-primary/80" />
+              {task.commentCount}
+            </span>
+          ) : null}
+        </div>
+      </div>
+
+      {canManage ? (
+        <div className="flex shrink-0 gap-1">
+          <TaskFormDialog
+            projectId={task.projectId}
+            members={members}
+            task={{
+              id: task.id,
+              title: task.title,
+              description: task.description,
+              status: task.status,
+              priority: task.priority,
+              dueDate: task.dueDateISO ? task.dueDateISO.slice(0, 10) : "",
+              assigneeId: task.assigneeId,
+            }}
+            trigger={({ onClick }) => (
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                onClick={onClick}
+                aria-label="Edit task"
+              >
+                <Pencil className="size-4" />
+              </Button>
+            )}
+          />
+          <ConfirmDialog
+            title="Delete task?"
+            description={`"${task.title}" and all of its comments will be permanently deleted. This cannot be undone.`}
+            confirmLabel="Delete task"
+            successMessage="Task deleted."
+            onConfirm={async () => {
+              const result = await deleteTaskAction(task.id);
+              if (result.ok) router.refresh();
+              return result;
+            }}
+            trigger={({ onClick }) => (
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                onClick={onClick}
+                aria-label="Delete task"
+              >
+                <Trash2 className="size-4" />
+              </Button>
+            )}
+          />
+        </div>
+      ) : null}
+    </div>
+  );
+}
