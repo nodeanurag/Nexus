@@ -297,3 +297,24 @@ export function WorkspacesManager({
   }
 
   return (
+    <div className="space-y-6">
+      {/* Header Panel */}
+      <div className="mb-10 flex flex-col justify-between gap-6 sm:flex-row sm:items-center rounded-2xl border border-color-fog bg-color-mist/40 p-6 sm:p-8">
+        <div className="space-y-2">
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-color-mist border border-color-fog px-3 py-1 text-xs font-semibold font-mono text-color-iris">
+            <Sparkles className="size-3.5 text-color-iris" />
+            <span>Workspace Switchboard</span>
+          </div>
+          <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl text-color-ink">
+            Workspace Hub
+          </h1>
+          <p className="text-color-slate text-sm sm:text-base">
+            Create new workspaces or manage configuration, settings, and team access.
+          </p>
+        </div>
+        <div className="shrink-0">
+          <CreateWorkspaceDialog />
+        </div>
+      </div>
+
+      {/* Search and Filters */}
