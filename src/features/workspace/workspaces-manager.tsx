@@ -378,3 +378,57 @@ export function WorkspacesManager({
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                  {/* Stats */}
+                  <div className="flex items-center gap-3 text-xs font-semibold">
+                    <span className="inline-flex items-center gap-1.5 rounded-lg bg-color-mist px-2 py-1 text-color-ink border border-color-fog">
+                      <FolderKanban className="size-3.5 text-muted-foreground" />
+                      {workspace._count.projects} projects
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 rounded-lg bg-color-mist px-2 py-1 text-color-ink border border-color-fog">
+                      <Users className="size-3.5 text-muted-foreground" />
+                      {workspace._count.members} members
+                    </span>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex items-center gap-2 pt-2">
+                    <Link href={`/workspaces/${workspace.id}`} className="flex-1">
+                      <Button variant="outline" className="w-full text-xs font-semibold h-9 rounded-xl">
+                        Open Workspace
+                      </Button>
+                    </Link>
+                    {canManage ? (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-9 w-9 border border-border/40 rounded-xl hover:bg-muted/50 cursor-pointer"
+                        title="Workspace Settings"
+                        onClick={() => {
+                          setActiveWorkspace(workspace);
+                          setRenameName(workspace.name);
+                          setActiveTab("general");
+                        }}
+                      >
+                        <Settings2 className="size-4 text-color-slate hover:text-color-ink" />
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-9 w-9 border border-border/40 rounded-xl hover:bg-destructive/10 hover:text-destructive hover:border-destructive/20 cursor-pointer"
+                        title="Leave Workspace"
+                        onClick={() => {
+                          setActiveWorkspace(workspace);
+                          handleLeave();
+                        }}
+                      >
+                        <LogOut className="size-4" />
+                      </Button>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      )}
