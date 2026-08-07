@@ -139,3 +139,43 @@ export function WorkspacesManager({
       });
     }
   }, [activeWorkspace]);
+
+  const filtered = workspaces.filter((ws) =>
+    ws.name.toLowerCase().includes(search.toLowerCase())
+  );
+
+  function handleRename(e: React.FormEvent) {
+    e.preventDefault();
+    if (!activeWorkspace || !renameName.trim()) return;
+
+    startTransition(async () => {
+      const res = await updateWorkspaceAction(activeWorkspace.id, { name: renameName });
+      if (res.ok) {
+        toast.success("Workspace renamed successfully.");
+        setWorkspaces((prev) =>
+          prev.map((ws) => (ws.id === activeWorkspace.id ? { ...ws, name: renameName } : ws))
+        );
+        setActiveWorkspace((prev) => (prev ? { ...prev, name: renameName } : null));
+        router.refresh();
+      } else {
+        toast.error(res.error || "Failed to rename workspace.");
+      }
+    });
+  }
+
+  function handleDelete() {
+    if (!activeWorkspace) return;
+    if (!confirm(`Are you absolutely sure you want to delete "${activeWorkspace.name}"?`)) return;
+
+    startTransition(async () => {
+      const res = await deleteWorkspaceAction(activeWorkspace.id);
+      if (res.ok) {
+        toast.success("Workspace deleted successfully.");
+        setWorkspaces((prev) => prev.filter((ws) => ws.id !== activeWorkspace.id));
+        setActiveWorkspace(null);
+        router.refresh();
+      } else {
+        toast.error(res.error || "Failed to delete workspace.");
+      }
+    });
+  }
