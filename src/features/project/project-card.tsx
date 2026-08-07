@@ -66,3 +66,72 @@ export function ProjectCard({
           </Badge>
         </div>
         {canManage ? (
+          <div className="flex shrink-0 gap-1">
+            <ProjectFormDialog
+              workspaceId={project.workspaceId}
+              project={{
+                id: project.id,
+                title: project.title,
+                description: project.description,
+                status: project.status,
+                deadline: project.deadlineISO
+                  ? project.deadlineISO.slice(0, 10)
+                  : "",
+              }}
+              trigger={({ onClick }) => (
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={onClick}
+                  aria-label="Edit project"
+                >
+                  <Pencil className="size-4" />
+                </Button>
+              )}
+            />
+            <ConfirmDialog
+              title="Delete project?"
+              description={`"${project.title}" and all of its tasks will be permanently deleted. This cannot be undone.`}
+              confirmLabel="Delete project"
+              successMessage="Project deleted."
+              onConfirm={async () => {
+                const result = await deleteProjectAction(project.id);
+                if (result.ok) router.refresh();
+                return result;
+              }}
+              trigger={({ onClick }) => (
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={onClick}
+                  aria-label="Delete project"
+                >
+                  <Trash2 className="size-4" />
+                </Button>
+              )}
+            />
+          </div>
+        ) : null}
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {project.description ? (
+          <p className="text-muted-foreground line-clamp-2 text-sm">
+            {project.description}
+          </p>
+        ) : null}
+        <div className="text-muted-foreground flex flex-wrap gap-4 text-sm">
+          <span className="flex items-center gap-1.5">
+            <ListChecks className="size-4" />
+            {project.taskCount} tasks
+          </span>
+          {deadline ? (
+            <span className="flex items-center gap-1.5">
+              <CalendarClock className="size-4" />
+              {deadline}
+            </span>
+          ) : null}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
