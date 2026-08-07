@@ -318,3 +318,63 @@ export function WorkspacesManager({
       </div>
 
       {/* Search and Filters */}
+      <div className="relative max-w-md">
+        <Search className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground/70" />
+        <Input
+          type="text"
+          placeholder="Search workspaces..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="pl-10 h-10 bg-card/65 backdrop-blur-md border-border/80 focus-visible:ring-primary/45 focus-visible:border-primary/50 transition-all rounded-xl"
+        />
+      </div>
+
+      {/* Grid of Workspaces */}
+      {filtered.length === 0 ? (
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border/60 bg-card/30 py-16 text-center shadow-xs">
+          <p className="text-muted-foreground text-sm font-medium">
+            {search ? "No workspaces found matching your query." : "No workspaces found."}
+          </p>
+        </div>
+      ) : (
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 animate-in fade-in duration-300">
+          {filtered.map((workspace) => {
+            const gradient = getGradient(workspace.name);
+            const isOwner = workspace.role === "OWNER";
+            const isAdmin = workspace.role === "ADMIN";
+            const canManage = isOwner || isAdmin;
+
+            return (
+              <Card
+                key={workspace.id}
+                className="h-full border-border/50 bg-card shadow-2xs transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-md"
+              >
+                <CardHeader className="flex flex-row items-start justify-between gap-2 pb-4">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div
+                      className={cn(
+                        "flex size-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br font-bold text-white shadow-sm text-sm",
+                        gradient
+                      )}
+                    >
+                      {workspace.name.slice(0, 2).toUpperCase()}
+                    </div>
+                    <div className="min-w-0">
+                      <CardTitle className="truncate text-base font-bold text-foreground">
+                        {workspace.name}
+                      </CardTitle>
+                      <Badge
+                        variant="secondary"
+                        className={cn(
+                          "mt-1 text-[9px] font-semibold tracking-wider uppercase font-mono px-2 py-0.5 rounded-md",
+                          isOwner
+                            ? "bg-color-mist text-color-iris border border-color-fog"
+                            : "bg-color-mist text-color-slate border border-color-fog"
+                        )}
+                      >
+                        {ROLE_LABELS[workspace.role]}
+                      </Badge>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
