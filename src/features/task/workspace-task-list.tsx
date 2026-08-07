@@ -57,3 +57,30 @@ function getUserGradient(name: string) {
   const index = Math.abs(hash) % USER_GRADIENTS.length;
   return USER_GRADIENTS[index];
 }
+
+export function WorkspaceTaskList({
+  tasks,
+  workspaceId,
+}: {
+  tasks: Task[];
+  workspaceId: string;
+}) {
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("ALL");
+  const [priorityFilter, setPriorityFilter] = useState("ALL");
+  const [projectFilter, setProjectFilter] = useState("ALL");
+
+  // Get unique projects for filter dropdown
+  const projectsMap = new Map<string, string>();
+  tasks.forEach((t) => projectsMap.set(t.project.id, t.project.title));
+  const uniqueProjects = Array.from(projectsMap.entries()).map(([id, title]) => ({ id, title }));
+
+  const filtered = tasks.filter((task) => {
+    const matchesSearch = task.title.toLowerCase().includes(search.toLowerCase());
+    const matchesStatus = statusFilter === "ALL" || task.status === statusFilter;
+    const matchesPriority = priorityFilter === "ALL" || task.priority === priorityFilter;
+    const matchesProject = projectFilter === "ALL" || task.projectId === projectFilter;
+    return matchesSearch && matchesStatus && matchesPriority && matchesProject;
+  });
+
+  return (
