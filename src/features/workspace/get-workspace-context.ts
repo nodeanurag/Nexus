@@ -12,11 +12,11 @@ import { getWorkspaceById } from "@/server/services/workspace.service";
  */
 export const getWorkspaceContext = cache(async (workspaceId: string) => {
   const user = await requireUser();
-  const workspace = await getWorkspaceById(workspaceId);
-  if (!workspace) notFound();
-
-  const membership = await getMembership(user.id, workspaceId);
-  if (!membership) notFound();
+  const [workspace, membership] = await Promise.all([
+    getWorkspaceById(workspaceId),
+    getMembership(user.id, workspaceId),
+  ]);
+  if (!workspace || !membership) notFound();
 
   return { user, workspace, role: membership.role };
 });
